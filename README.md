@@ -1,4 +1,4 @@
-mpv-lazy 繁體中文包，使用繁化姬做簡轉繁，由Arced製作
+mpv-lazy 繁體中文包，使用繁化姬做簡轉繁，由Arced製作，不定期更新
 
 將繁化包解壓縮後將portable_config資料夾覆蓋安裝位置的portable_config資料夾即可
 
