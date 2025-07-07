@@ -1,0 +1,1 @@
+{"volume":130,"mute":false,"glsl-shaders":["~~/shaders/KrigBilateral.glsl","~~/shaders/Anime4K_Restore_CNN_M.glsl","~~/shaders/Anime4K_Upscale_CNN_x2_M.glsl"]}
