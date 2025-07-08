@@ -7,6 +7,8 @@ mpv-lazy官方網站及最新版本載點：https://github.com/hooke007/MPV_lazy
 
 將繁化包解壓縮後，把裡面的東西丟到portable_config資料夾內(並取代目的地中的檔案)即可
 
+全部繁化包載點：https://github.com/arcedchen/mpvlazyCHT/releases
+
 【先前版本】
 
 將繁化包解壓縮後將portable_config資料夾覆蓋安裝位置的portable_config資料夾即可
