@@ -40,7 +40,7 @@ local options = {
     binpath = "default",
     min_duration = 10,
     precise = 0,
-    quality = 0,                 -- require vf_libplacebo for 3
+    quality = 1,
     frequency = 0.125,
 
 }
@@ -320,72 +320,33 @@ end
 local activity_timer
 
 local scale_sw = "fast-bilinear"
-local vf_str
-local quality = options.quality
 local seek_period_raw = options.frequency
 local seek_period_cur = seek_period_raw
 local precise_raw = options.precise
 local precise_cur = precise_raw
 
-local function quality_fin()
-    local vf_str_pre = "scale=w="..effective_w..":h="..effective_h
-    local vf_str_suffix = "format=fmt=bgra"
-
-    if quality == 0 then
-        if precise_raw == 2 then
-            quality = 2
-        elseif precise_raw == 0 then
-            quality = 1
-        elseif precise_raw == 1 then
-            quality = 1
-        end
-        if options.sw_threads >= 3 then
-            quality = 2
-            if options.sw_threads >= 6 then
-                quality = 3
-            end
-        elseif options.sw_threads == 1 then
-            quality = 1
+local function vf_gen()
+    local qc = tonumber(options.quality) or 1
+    local hdr = mp.get_property_number("video-params/sig-peak", 1)
+    -- local vf_str_op = "format=w="..effective_w..":h="..effective_h
+    local vf_str_ed = ",format=fmt=bgra"
+    local vf_str_full = "scale=w="..effective_w..":h="..effective_h..vf_str_ed
+    if qc > 1 then
+        vf_str_full = "gpu=api=vulkan:w="..effective_w..":h="..effective_h..vf_str_ed
+    end
+    if hdr > 1 then
+        local hdr10 = mp.get_property_number("video-out-params/max-cll", 0)
+        local dvp = mp.get_property_number("current-tracks/video/dolby-vision-profile", 0)
+        local dvl = mp.get_property_number("current-tracks/video/dolby-vision-level", 0)
+        local dvp5 = dvp == 5
+        local dvp8_4 = (dvp == 8) and (dvl == 7) and (hdr10 == 0)
+        if dvp5 and (qc > 2) then
+            vf_str_full = "scale=w="..effective_w..":h="..effective_h..",libplacebo=colorspace=bt709:color_primaries=bt709:color_trc=bt709:tonemapping=hable"..vf_str_ed
+        elseif dvp8_4 and (qc < 2) then
+            vf_str_full = "scale=w="..effective_w..":h="..effective_h..",tonemap=tonemap=hable,zscale=transfer=linear,format=fmt=gbrp,zscale=primaries=bt709:transfer=bt709:matrix=bt709:range=pc"..vf_str_ed
         end
     end
-
-    if quality == 1 then
-        scale_sw = "fast-bilinear"
-        vf_str = vf_str_pre..":flags=fast_bilinear,"..vf_str_suffix
-    elseif quality == 2 then
-        scale_sw = "bicublin"
-        vf_str = vf_str_pre..":flags=bicublin,"..vf_str_suffix
-        if mp.get_property_number("video-params/sig-peak", 1) > 1 then
-            vf_str = vf_str_pre..":flags=bicublin,format=fmt=gbrapf32,zscale=t=linear:npl=203,tonemap=tonemap=hable:desat=0.0,zscale=p=709:t=709:m=709,"..vf_str_suffix
-        end
-    elseif quality == 3 then
-        scale_sw = "bicublin"
-        if mp.get_property_number("video-out-params/max-luma", 1) > 203 then
-            vf_str = "lavfi=[libplacebo=w="..effective_w..":h="..effective_h..":colorspace=bt709:color_primaries=bt709:color_trc=bt709:tonemapping=hable:format=bgra]"
-
-            -- 無奈的workaround
-            if seek_period_cur < 0.5 then
-                seek_period_cur = 0.5
-                mp.msg.warn("已延遲請求頻率以匹配性能需求")
-            end
-            if precise_cur == 0 then
-                precise_cur = 1
-                mp.msg.info("已降低時間軸精度以匹配性能需求")
-            end
-
-        else -- down2lv2
-            vf_str = vf_str_pre..":flags=bicublin,"..vf_str_suffix
-
-            if seek_period_cur ~= seek_period_raw then
-                seek_period_cur = seek_period_raw
-            end
-            if precise_cur ~= precise_raw then
-                precise_cur = precise_raw
-            end
-
-        end
-    end
-    return vf_str
+    return vf_str_full
 end
 
 local function spawn(time)
@@ -417,24 +378,24 @@ local function spawn(time)
         "--pause=yes", "--ao=null",
         "--osc=no", "--load-stats-overlay=no", "load-console=no", "load-commands=no", "--load-auto-profiles=no", "--load-select=no", "--load-positioning=no",
         "--clipboard-backends-clr", "--video-osd=no", "--autoload-files=no",
-        "--vd-lavc-skiploopfilter=all", "--vd-lavc-skipidct=all", "--hwdec-software-fallback=1", "--vd-lavc-fast",
-        "--vd-lavc-threads="..options.sw_threads, "--hwdec="..options.hwdec,
+        "--vd-lavc-skiploopfilter=all", "--vd-lavc-skipidct=all", "--vd-lavc-fast", "--vd-lavc-threads="..options.sw_threads, "--hwdec="..options.hwdec,
         "--edition="..(properties["edition"] or "auto"), "--vid="..(vid or "auto"), "--sub=no", "--audio=no",
         "--start="..time,
-        "--gpu-dumb-mode=yes", "--dither-depth=no", "--tone-mapping=clip", "--hdr-compute-peak=no",
-        "--vf="..quality_fin(), "--audio-pitch-correction=no", "--deinterlace=no",
-        "--sws-allow-zimg=no", "--sws-fast=yes", "--sws-scaler="..scale_sw,
+        "--dither-depth=no", "--tone-mapping=hable",
+        "--audio-pitch-correction=no", "--deinterlace=no",
         "--ytdl-format=worst", "--demuxer-readahead-secs=0", "--demuxer-max-bytes=128KiB",
-        "--ovc=rawvideo", "--of=image2", "--ofopts=update=1", "--ocopy-metadata=no", "--o="..options.tnpath
+        "--vf="..vf_gen(), "--ovc=rawvideo", "--of=image2", "--ofopts=update=1", "--ocopy-metadata=no", "--o="..options.tnpath
     }
 
     if os_name == "darwin" then
         table.insert(args, "--macos-app-activation-policy=prohibited")
+        table.insert(args, "--input-media-keys=no")
     end
 
     if os_name == "windows" then
         table.insert(args, "--media-controls=no")
         table.insert(args, "--input-ipc-server="..options.socket)
+        table.insert(args, "--input-media-keys=no")
     elseif not script_written then
         local client_script_path = options.socket..".run"
         local script = io.open(client_script_path, "w+")
@@ -526,7 +487,7 @@ local function real_res(req_w, req_h, filesize)
     local count = filesize / 4
     local diff = (req_w * req_h) - count
 
-    if (properties["video-params"] and properties["video-params"]["rotate"] or 0) % 180 == 90 then
+    if (properties["video-dec-params"] and properties["video-dec-params"]["rotate"] or 0) % 180 == 90 then
         req_w, req_h = req_h, req_w
     end
 
@@ -804,6 +765,7 @@ end)
 mp.observe_property("track-list", "native", update_tracklist)
 mp.observe_property("display-hidpi-scale", "native", update_property_dirty)
 mp.observe_property("video-params", "native", update_property_dirty)
+mp.observe_property("video-dec-params", "native", update_property_dirty)
 mp.observe_property("demuxer-via-network", "native", update_property)
 mp.observe_property("stream-open-filename", "native", update_property)
 mp.observe_property("path", "native", update_property)
@@ -822,17 +784,21 @@ mp.add_key_binding(nil, "thumb_rerun", function()
     auto_run = true
     file_load()
     mp.osd_message("縮圖功能已重啟", 2)
+    mp.msg.info("縮圖功能已重啟")
 end)
 mp.add_key_binding(nil, "thumb_toggle", function()
     if auto_run then
         auto_run = false
-        file_load()
+        clear()
         shutdown()
+        file_load()
         mp.osd_message("縮圖功能已臨時禁用", 2)
+        mp.msg.info("縮圖功能已臨時禁用")
     else
         auto_run = true
         file_load()
         mp.osd_message("縮圖功能已臨時啟用", 2)
+        mp.msg.info("縮圖功能已臨時啟用")
     end
 end)
 mp.register_script_message("thumb_hwdec", function(hwdec_api)
@@ -847,6 +813,7 @@ mp.register_script_message("thumb_hwdec", function(hwdec_api)
     end
     options.hwdec = hwdec_api
     mp.osd_message("縮圖已變更首選解碼API：" .. hwdec_api, 2)
+    mp.msg.info("縮圖已變更首選解碼API：" .. hwdec_api)
     clear()
     shutdown()
     file_load()
