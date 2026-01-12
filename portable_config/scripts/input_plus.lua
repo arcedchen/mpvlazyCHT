@@ -1,98 +1,7 @@
 ﻿--[[
-文件_ 無
+文件_ https://github.com/hooke007/mpv_PlayKit/discussions/615
 
 快捷指令增強
-
-可用的快捷鍵範例（在 input.conf 中寫入）：
-
- <KEY>   script-binding input_plus/adevice_back        # 上一個音訊輸出設備
- <KEY>   script-binding input_plus/adevice_next        # 下...
- <KEY>   script-binding input_plus/adevice_all_back    # 上...（包括不屬於當前 --ao 的設備）
- <KEY>   script-binding input_plus/adevice_all_next    # 下...
-
- <KEY>   script-binding input_plus/chap_skip_toggle    # 啟用/禁用強制自動跳過章節（片頭片尾）
-
- <KEY>   script-binding input_plus/chapter_back        # 上一個章節（自動跳過無章節到播放列表上一個文件）
- <KEY>   script-binding input_plus/chapter_back_nat    # 上...（自動跳過無章節到播放列表上一個文件的最後一個章節）
- <KEY>   script-binding input_plus/chapter_next        # 下...（自動跳過無章節到播放列表下一個文件）
- <KEY>   script-message-to input_plus chapter-useek 1   # 下一個章節（此功能需要 uosc 腳本：自動跳過無章節到播放列表或當前目錄的下一個文件）
- <KEY>   script-message-to input_plus chapter-useek -1 nat
-
- <KEY>   script-binding input_plus/import_files        # 打開文件（喚起一個打開文件的窗口，下面三項同理 僅Windows可用）
- <KEY>   script-binding input_plus/import_url          # 打開地址（不可取消）
- <KEY>   script-binding input_plus/append_aid          # 追加其它音軌（不切換）
- <KEY>   script-binding input_plus/append_sid          # 追加其它字幕（切換）
-
- <KEY>   script-binding input_plus/info_toggle         # 啟用/禁用仿Pot的OSD常駐顯示簡要資訊
-
- <KEY>   script-binding input_plus/mark_aid_A          # 標記當前音軌為A
- <KEY>   script-binding input_plus/mark_aid_B          # 標記當前音軌為B
- <KEY>   script-binding input_plus/mark_aid_merge      # 合併AB音軌
- <KEY>   script-binding input_plus/mark_aid_reset      # 取消AB並軌和標記
- <KEY>   script-binding input_plus/mark_aid_fin        # （單鍵實現上述四項命令）
-
- <KEY>   script-binding input_plus/ostime_display      # 臨時顯示系統時間
- <KEY>   script-binding input_plus/ostime_toggle       # 啟用/禁用顯示系統時間
-
- <KEY>   script-message-to input_plus update-osd 1     # 開始強制刷新OSD的渲染
- <KEY>   script-message-to input_plus update-osd 0     # 暫停強制刷新OSD的渲染
- <KEY>   script-message-to input_plus update-osd 1 $FREQ   # 可選參數 $FREQ 表示指定刷新間隔，大於0且小於1
-
- <KEY>   script-binding input_plus/pip_dummy           # 畫中畫（偽）/小窗化
- <KEY>   script-message-to input_plus pip_dummy_pct 40   # ...（支持自訂數值）
-
- <KEY>   script-binding input_plus/playlist_order_0    # 播放列表的洗牌與撤銷
- <KEY>   script-binding input_plus/playlist_order_0r   # ...（重定向至首個文件）
- <KEY>   script-binding input_plus/playlist_order_1    # 播放列表連續洗牌（可用上兩項命令恢復）
- <KEY>   script-binding input_plus/playlist_order_1r   # ...
- <KEY>   script-binding input_plus/playlist_random     # 隨機跳轉到播放列表中的任一條目
- <KEY>   script-binding input_plus/playlist_tmp_save   # 保存當前播放列表為臨時列表（位於主設置目錄 playlist_temp.mpl ）
- <KEY>   script-binding input_plus/playlist_tmp_load   # 打開臨時播放列表
-
- <KEY>   script-binding input_plus/quit_real           # 對執行退出命令前的確認（防止誤觸）
- <KEY>   script-binding input_plus/quit_wait           # 延後退出命令的執行（執行前再次觸發可取消）
-
- <KEY>   script-binding input_plus/seek_acc            # [按住/鬆開] 非線性向前跳轉（模擬串流媒體平台的跳轉方式）
- <KEY>   script-binding input_plus/seek_acc_back       # [按住/鬆開] ......向後...
- <KEY>   script-binding input_plus/seek_acc_alt        # [按住/鬆開] ...（防止關鍵幀異常的備用）
- <KEY>   script-binding input_plus/seek_acc_back_alt   # [按住/鬆開] ...
- <KEY>   script-message-to input_plus update-var seek_dur_step 2   # 修改自訂跳轉步長增量，默認 1
-
- <KEY>   script-binding input_plus/sids_sec_swap       # 雙字幕的主次交換
-
- <KEY>   script-binding input_plus/speed_auto          # [按住/鬆開] 兩倍速/一倍速
- <KEY>   script-binding input_plus/speed_auto_bullet   # [按住/鬆開] 子彈時間/一倍速
- <KEY>   script-binding input_plus/speed_autox         # [按住/鬆開] 自訂目標速/一倍速
- <KEY>   script-message-to input_plus update-var spd_target 4   # 修改自訂目標速度，默認 3
- <KEY>   script-binding input_plus/speed_recover       # 仿Pot的速度重設與恢復
-
- <KEY>   script-binding input_plus/speed_sync_toggle   # 啟用/禁用自適應速度偏移（補償顯示刷新率）
-
- <KEY>   script-message-to input_plus cycle-stats 1 2   # 循環瀏覽統計數據第1至2頁（頁數可自訂）
-
- <KEY>   script-binding input_plus/trackA_back         # 上一個音訊軌道（自動跳過無軌道）
- <KEY>   script-binding input_plus/trackA_next         # 下...
- <KEY>   script-binding input_plus/trackS_back         # 上一個字幕軌道...
- <KEY>   script-binding input_plus/trackS_next         # 下...
- <KEY>   script-binding input_plus/trackV_back         # 上一個影片軌道...
- <KEY>   script-binding input_plus/trackV_next         # 下...
-
- <KEY>   script-binding input_plus/trackA_refresh      # 刷新當前軌道（音訊）
- <KEY>   script-binding input_plus/trackS_refresh      # ............（字幕）
- <KEY>   script-binding input_plus/trackV_refresh      # ............（影片）
-
- <KEY>   script-binding input_plus/volume_db_dec       # 減少音量（以分貝為單位）
- <KEY>   script-binding input_plus/volume_db_inc       # 增加...
-
- <KEY>   script-binding input_plus/af_hold             # [按住/鬆開] 臨時清空音訊濾鏡/恢復
- <KEY>   script-binding input_plus/vf_hold             # [...] 臨時清空影片濾鏡/...
- <KEY>   script-binding input_plus/glsl_hold           # [...] 臨時清空著色器/...
-
- <KEY>   script-message-to input_plus glsl-param set $RTshader $Param $Val                  # 設置指定 $RT著色器 的指定 $參數 $值
- <KEY>   script-message-to input_plus glsl-param add $RTshader $Param $Val $Def $Min $Max   # 調節指定 $RT著色器 的指定 $參數 $步進值（可選：指定 $默認 $最小 $最大值）
-
- <KEY>   script-message-to input_plus cycle-cmds "cmd1" "cmd2"   # 循環觸發命令
-
 ]]
 
 local mp = require "mp"
@@ -331,128 +240,131 @@ function cycle_cmds(...)
 end
 
 
-function import_files()
+function import_via_dialog(config)
 	if plat ~= "windows" then
 		return
 	end
+
 	local was_ontop = mp.get_property_native("ontop")
 	if was_ontop then mp.set_property_native("ontop", false) end
+
 	local res = mp.utils.subprocess({
-		args = {'powershell', '-NoProfile', '-Command', [[& {
-			Trap {
-				Write-Error -ErrorRecord $_
-				Exit 1
-			}
-			Add-Type -AssemblyName PresentationFramework
-			$u8 = [System.Text.Encoding]::UTF8
-			$out = [Console]::OpenStandardOutput()
-			$ofd = New-Object -TypeName Microsoft.Win32.OpenFileDialog
-			$ofd.Multiselect = $true
-			If ($ofd.ShowDialog() -eq $true) {
-				ForEach ($filename in $ofd.FileNames) {
-					$u8filename = $u8.GetBytes("$filename`n")
-					$out.Write($u8filename, 0, $u8filename.Length)
-				}
-			}
-		}]]},
+		args = {'powershell', '-NoProfile', '-Command', config.ps_script},
 		cancellable = false,
 	})
+
 	if was_ontop then mp.set_property_native("ontop", true) end
-	if (res.status ~= 0) then return end
-	local first_file = true
-	for filename in string.gmatch(res.stdout, '[^\n]+') do
-		mp.commandv("loadfile", filename, first_file and "replace" or "append")
-		first_file = false
+
+	if res.status == 0 and res.stdout then
+		config.handler(res.stdout)
 	end
 end
-function import_url()
-	if plat ~= "windows" then
-		return
-	end
-	local was_ontop = mp.get_property_native("ontop")
-	if was_ontop then mp.set_property_native("ontop", false) end
-	local res = mp.utils.subprocess({
-		args = {'powershell', '-NoProfile', '-Command', [[& {
-			Trap {
-				Write-Error -ErrorRecord $_
-				Exit 1
+function get_file_dialog_ps(multiselect)
+	return string.format([[& {
+		Trap { Write-Error -ErrorRecord $_; Exit 1 }
+		Add-Type -AssemblyName PresentationFramework
+		$u8 = [System.Text.Encoding]::UTF8
+		$out = [Console]::OpenStandardOutput()
+		$ofd = New-Object -TypeName Microsoft.Win32.OpenFileDialog
+		$ofd.Multiselect = %s
+		If ($ofd.ShowDialog() -eq $true) {
+			ForEach ($filename in $ofd.FileNames) {
+				$u8filename = $u8.GetBytes("$filename`n")
+				$out.Write($u8filename, 0, $u8filename.Length)
 			}
+		}
+	}]], multiselect)
+end
+local import_configs = {
+	files = {
+		ps_script = get_file_dialog_ps("$true"),
+		handler = function(stdout)
+			local first_file = true
+			for filename in string.gmatch(stdout, '[^\r\n]+') do
+				local mode = first_file and "replace" or "append"
+				mp.commandv("loadfile", filename, mode)
+				first_file = false
+			end
+		end
+	},
+
+	dvd_iso = {
+		ps_script = get_file_dialog_ps("$false"),
+		handler = function(stdout)
+			for filename in string.gmatch(stdout, '[^\r\n]+') do
+				mp.commandv("set", "dvd-device", filename)
+				mp.commandv("loadfile", "dvd://", "replace")
+				break
+			end
+		end
+	},
+
+	bd_iso = {
+		ps_script = get_file_dialog_ps("$false"),
+		handler = function(stdout)
+			for filename in string.gmatch(stdout, '[^\r\n]+') do
+				mp.commandv("set", "bluray-device", filename)
+				mp.commandv("loadfile", "bd://", "replace")
+				break
+			end
+		end
+	},
+
+	audio = {
+		ps_script = get_file_dialog_ps("$false"),
+		handler = function(stdout)
+			for filename in string.gmatch(stdout, '[^\r\n]+') do
+				mp.commandv("audio-add", filename, "auto")
+			end
+		end
+	},
+
+	subtitle = {
+		ps_script = get_file_dialog_ps("$false"),
+		handler = function(stdout)
+			for filename in string.gmatch(stdout, '[^\r\n]+') do
+				mp.commandv("sub-add", filename, "cached")
+			end
+		end
+	},
+
+	url = {
+		ps_script = [[& {
+			Trap { Write-Error -ErrorRecord $_; Exit 1 }
 			Add-Type -AssemblyName Microsoft.VisualBasic
 			$u8 = [System.Text.Encoding]::UTF8
 			$out = [Console]::OpenStandardOutput()
 			$urlname = [Microsoft.VisualBasic.Interaction]::InputBox("輸入地址", "打開", "https://")
 			$u8urlname = $u8.GetBytes("$urlname")
 			$out.Write($u8urlname, 0, $u8urlname.Length)
-		}]]},
-		cancellable = false,
-	})
-	if was_ontop then mp.set_property_native("ontop", true) end
-	if (res.status ~= 0) then return end
-	mp.commandv("loadfile", res.stdout)
+		}]],
+		handler = function(stdout)
+			mp.commandv("loadfile", stdout)
+		end
+	}
+}
+function import_files(iso)
+	if plat ~= "windows" then
+		return
+	end
+	local config_map = {
+		[0] = import_configs.files,
+		[1] = import_configs.dvd_iso,
+		[2] = import_configs.bd_iso
+	}
+	local config = config_map[iso]
+	if config then
+		import_via_dialog(config)
+	end
+end
+function import_url()
+	import_via_dialog(import_configs.url)
 end
 function import_append_aid()
-	if plat ~= "windows" then
-		return
-	end
-	local was_ontop = mp.get_property_native("ontop")
-	if was_ontop then mp.set_property_native("ontop", false) end
-	local res = mp.utils.subprocess({
-		args = {'powershell', '-NoProfile', '-Command', [[& {
-			Trap {
-				Write-Error -ErrorRecord $_
-				Exit 1
-			}
-			Add-Type -AssemblyName PresentationFramework
-			$u8 = [System.Text.Encoding]::UTF8
-			$out = [Console]::OpenStandardOutput()
-			$ofd = New-Object -TypeName Microsoft.Win32.OpenFileDialog
-			$ofd.Multiselect = $false
-			If ($ofd.ShowDialog() -eq $true) {
-				ForEach ($filename in $ofd.FileNames) {
-					$u8filename = $u8.GetBytes("$filename")
-					$out.Write($u8filename, 0, $u8filename.Length)
-				}
-			}
-		}]]},
-		cancellable = false,
-	})
-	if was_ontop then mp.set_property_native("ontop", true) end
-	if (res.status ~= 0) then return end
-	for filename in string.gmatch(res.stdout, '[^\n]+') do
-		mp.commandv("audio-add", filename, "auto")
-	end
+	import_via_dialog(import_configs.audio)
 end
 function import_append_sid()
-	if plat ~= "windows" then
-		return
-	end
-	local was_ontop = mp.get_property_native("ontop")
-	if was_ontop then mp.set_property_native("ontop", false) end
-	local res = mp.utils.subprocess({
-		args = {'powershell', '-NoProfile', '-Command', [[& {
-			Trap {
-				Write-Error -ErrorRecord $_
-				Exit 1
-			}
-			Add-Type -AssemblyName PresentationFramework
-			$u8 = [System.Text.Encoding]::UTF8
-			$out = [Console]::OpenStandardOutput()
-			$ofd = New-Object -TypeName Microsoft.Win32.OpenFileDialog
-			$ofd.Multiselect = $false
-			If ($ofd.ShowDialog() -eq $true) {
-				ForEach ($filename in $ofd.FileNames) {
-					$u8filename = $u8.GetBytes("$filename")
-					$out.Write($u8filename, 0, $u8filename.Length)
-				}
-			}
-		}]]},
-		cancellable = false,
-	})
-	if was_ontop then mp.set_property_native("ontop", true) end
-	if (res.status ~= 0) then return end
-	for filename in string.gmatch(res.stdout, '[^\n]+') do
-		mp.commandv("sub-add", filename, "cached")
-	end
+	import_via_dialog(import_configs.subtitle)
 end
 
 
@@ -1068,6 +980,75 @@ end
 
 
 --
+-- 特殊
+--
+
+function update_var(var, val)
+	local msg_info_pre = "[input_plus] "
+	local msg_info = "內部變數更新"
+
+	if var == "spd_target" then
+		mp.remove_key_binding("speed_autox")
+		if tonumber(val) <=0 then
+			val = 0.1
+		end
+		spd_target = tonumber(val)
+		msg_info = "自訂目標速度 " .. val
+		mp.osd_message(msg_info_pre .. msg_info, 1)
+		mp.msg.info(msg_info)
+		mp.add_key_binding(nil, "speed_autox", speed_auto(nil, spd_target), {complex = true})
+
+	elseif var == "seek_dur_step" then
+		if tonumber(val) <=0 then
+			val = 0.1
+		end
+		seek_dur_step = tonumber(val)
+		msg_info = "自訂跳轉步長增量 " .. val
+		mp.osd_message(msg_info_pre .. msg_info, 1)
+		mp.msg.info(msg_info)
+
+	end
+end
+
+function lazy_helper(link)
+	local param = ""
+	if plat == "windows" then
+		param = 'no-osd run cmd /c start "" "' .. link .. '"'
+	elseif plat == "darwin" then
+		param = "no-osd run /bin/sh -c \"open '" .. link .. "' &\""
+	elseif plat == "linux" then
+		param = "no-osd run /bin/sh -c \"xdg-open '" .. link .. "' &\""
+	else
+		return
+	end
+	return param
+end
+function lazy_helper_main(index)
+	index = tonumber(index)
+	local cmd = ""
+
+	if index == 0 then -- project
+		cmd = lazy_helper("https://github.com/hooke007/mpv_PlayKit")
+	elseif index == 1 then -- mpv manual
+		cmd = lazy_helper("https://mpv.io/manual/master/")
+	elseif index == 2 then -- mpv manual cn
+		cmd = lazy_helper("https://hooke007.github.io/official_man/mpv.html")
+	elseif index == 3 then -- faq
+		cmd = lazy_helper("https://github.com/hooke007/mpv_PlayKit/wiki/0_FAQ")
+	elseif index == 4 then -- filter
+		cmd = lazy_helper("https://github.com/hooke007/mpv_PlayKit/wiki/3_FILTER")
+	elseif index == 5 then -- shader
+		cmd = lazy_helper("https://github.com/hooke007/mpv_PlayKit/wiki/4_GLSL")
+	end
+
+	if cmd ~= "" then
+		mp.command(cmd)
+	end
+end
+
+
+
+--
 -- 鍵位綁定
 --
 
@@ -1087,7 +1068,9 @@ mp.add_key_binding(nil, "chapter_back_nat", function() chapter_seek_force(-1, tr
 mp.add_key_binding(nil, "chapter_next", function() chapter_seek_force(1) end)
 mp.register_script_message("chapter-useek", function(dir, nat) chapter_seek_force(dir, nat, true) end)
 
-mp.add_key_binding(nil, "import_files", import_files)
+mp.add_key_binding(nil, "import_files", function() import_files(0) end)
+mp.add_key_binding(nil, "import_iso_dvd", function() import_files(1) end)
+mp.add_key_binding(nil, "import_iso_bd", function() import_files(2) end)
 mp.add_key_binding(nil, "import_url", import_url)
 mp.add_key_binding(nil, "import_append_aid", import_append_aid)
 mp.add_key_binding(nil, "import_append_sid", import_append_sid)
@@ -1158,29 +1141,6 @@ mp.register_script_message("cycle-cmds", cycle_cmds)
 
 mp.register_script_message("update-osd", function(num, freq) osd_hack_set(num, freq) end)
 
-mp.register_script_message("update-var", function(var, val)
-	local msg_info_pre = "[input_plus] "
-	local msg_info = "內部變數更新"
+mp.register_script_message("update-var", function(var, val) update_var(var, val) end)
 
-	if var == "spd_target" then
-		mp.remove_key_binding("speed_autox")
-		if tonumber(val) <=0 then
-			val = 0.1
-		end
-		spd_target = tonumber(val)
-		msg_info = "自訂目標速度 " .. val
-		mp.osd_message(msg_info_pre .. msg_info, 1)
-		mp.msg.info(msg_info)
-		mp.add_key_binding(nil, "speed_autox", speed_auto(nil, spd_target), {complex = true})
-
-	elseif var == "seek_dur_step" then
-		if tonumber(val) <=0 then
-			val = 0.1
-		end
-		seek_dur_step = tonumber(val)
-		msg_info = "自訂跳轉步長增量 " .. val
-		mp.osd_message(msg_info_pre .. msg_info, 1)
-		mp.msg.info(msg_info)
-
-	end
-end)
+mp.register_script_message("lazy-helper", function(index) lazy_helper_main(index) end)
