@@ -1,7 +1,7 @@
 # mpvlazyCHT
-mpv-lazy 繁體中文介面包，使用繁化姬做簡轉繁，由Arced製作，不定期更新
+mpv-playkit (原mpv-lazy) 繁體中文介面包，使用繁化姬做簡轉繁，由Arced製作，不定期更新
 
-mpv-lazy官方網站及最新版本載點：https://github.com/hooke007/MPV_lazy
+官方網站及最新版本載點：[https://github.com/hooke007/MPV_lazy](https://github.com/hooke007/mpv_PlayKit/releases)
 
 【2025V2及以後版本】
 
@@ -15,4 +15,4 @@ mpv-lazy官方網站及最新版本載點：https://github.com/hooke007/MPV_lazy
 
 先前版本繁化包載點：https://github.com/arcedchen/mpvlazyCHT/releases/tag/v1.0.0
 
-請注意繁化包版本必須與你安裝的MPV-lazy版本相符，以免出現錯誤
+請注意繁化包版本必須與你安裝的 mpv-playkit (原mpv-lazy) 版本相符，以免出現錯誤
